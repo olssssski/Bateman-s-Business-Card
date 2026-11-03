@@ -40,7 +40,7 @@ Copy `src/` into your site's public assets. Keep the JavaScript module and its t
 </script>
 ```
 
-Give the container an explicit height. Style the surrounding page, buttons, and readouts normally. Optional CSS custom properties on the container: `--card-focus`, `--card-shadow`, `--card-brush`, and `--card-fallback`. Each instance maintains independent camera and material state.
+Give the container an explicit height. Style the surrounding page, buttons, and readouts normally. Optional CSS custom properties on the container: `--card-focus`, `--card-shadow`, `--card-brush`, and `--card-fallback`. Each instance maintains independent camera and material state. Copy the entire `src/` directory: the renderer imports the shader, texture, and geometry modules beside it.
 
 ### API
 
@@ -61,7 +61,7 @@ Give the container an explicit height. Style the surrounding page, buttons, and 
 | `getState()` | Snapshot of tool, wet/char fractions, peak heat, simulation activity, light, inspection mode, rotation, and distance |
 | `destroy()` | Stop rendering; remove listeners, observers, viewport, and GPU resources; safe to call twice |
 
-Listen on your container for `cardstatus` (`detail.message`) and `cardstatechange` (`detail` is a state snapshot). Periodic state events occur while material evolves. The returned `canvas` and `element` identify the renderer's elements. Call `destroy()` before removing a mounted viewport; create a new instance to mount again. Treat a destroyed controller as inactive.
+Listen on your container for `cardstatus` (`detail.message`) and `cardstatechange` (`detail` is a state snapshot). Periodic state events occur while material evolves. The returned `canvas` and `element` identify the renderer's elements. Call `destroy()` before removing a mounted viewport; create a new instance to mount again. After `destroy()`, mutating methods throw; `getState()` remains available, and repeated `destroy()` is safe. State snapshots also include `destroyed` and `contextLost`. If the WebGL context is lost, rendering stops and a fallback appears; destroy the old instance and create a new one to recover.
 
 Pointer: drag to orbit, scroll/pinch to zoom, secondary drag to pan. Shift-drag pans in Rotate and temporarily rotates in material tools. Focus the viewport for arrow-key orbit, Shift-arrow pan, +/− zoom, and Space to apply the selected material tool at the center. The simulation pauses offscreen and in hidden tabs.
 
@@ -83,4 +83,4 @@ The regression test uses Node.js and Playwright with Chromium. Install Playwrigh
 node tests/browser.cjs
 ```
 
-Set `CHROMIUM_PATH` if Chromium is not at `/usr/bin/chromium`. The test serves the repository locally; checks the public API, material coupling, independent instances, cleanup/re-mount, and both example UIs.
+Set `CHROMIUM_PATH` if Chromium is not at `/usr/bin/chromium`. The test serves the repository locally; checks the public API, material coupling, immediate state/events, independent instances, cleanup/re-mount, two-finger gestures, interrupted painting, context loss, font/WebGL initialization failure and retry, mobile layout, and both example UIs.
